@@ -1,19 +1,12 @@
 
 # coding: utf-8
 
-# In[4]:
-
-
 import pandas as pd
 import glob
 from pandas import ExcelWriter
 from pandas import ExcelFile
 import numpy as np
 import glob
-
-
-# In[35]:
-
 
 os.chdir('/Users/yahuizhang/Desktop/python/AMJ')
 FileList = glob.glob('*.xlsx')
@@ -23,12 +16,6 @@ df = pd.DataFrame()
 for f in FileList:
     df = pd.read_excel(f, skiprows=0, skipfooter=0)
     all_data = all_data.append(df,ignore_index=True)
-
-
-# ## Calalute P&G brand postive rate on a category level for both product and non-product
-
-# In[332]:
-
 
 #Calalute P&G brand postive rate on a category level for both product and non-product
 category_coment = all_data.groupby(['category','brand', 'is_competitor', 'emotion'],                                    as_index=False)['comments#'].sum()
@@ -40,10 +27,6 @@ pg_pivot['Total'] = pg_pivot['Negative'] +  pg_pivot['Positive'] +  pg_pivot['Ne
 pg_pivot['Positive%'] =  pg_pivot['Positive'] / pg_pivot['Total'] 
 pg_pivot['Negative%'] =  pg_pivot['Negative'] / pg_pivot['Total'] 
 pg_pivot = pg_pivot.reset_index()
-
-
-# In[333]:
-
 
 # pg positive% category level
 pgc = pd.DataFrame(category[category.is_competitor == 0])
@@ -75,20 +58,10 @@ combine2.columns = ['Category', 'P&G_Pos%', 'P&G_Neg%','Com_Pos%', 'Com_Neg%', '
 combine2['Benchmark_Pos'] = combine2[['Com_Pos%', 'Indus_Pos%']].max(axis = 1)
 combine2['Benchmark_Neg'] = combine2[['Com_Neg%', 'Indus_Neg%']].min(axis = 1)
 
-
-# In[334]:
-
-
-final_all = pd.merge(pg_pivot, combine2, left_on = 'category', right_on = 'Category',
-                     how = 'outer')
+final_all = pd.merge(pg_pivot, combine2, left_on = 'category', right_on = 'Category',                     how = 'outer')
 Result_all = final_all[['category', 'brand', 'P&G_Pos%', 'Benchmark_Pos','P&G_Neg%',                   'Benchmark_Neg']]
 Result_all['vs_Benchmark_Pos'] = Result['P&G_Pos%'] - Result['Benchmark_Pos']
 Result_all['vs_Benchmark_Neg'] = Result['P&G_Neg%'] - Result['Benchmark_Neg']
-
-
-# ## 2. Calalute P&G brand postive rate on a category level for both product and package and function only
-
-# In[335]:
 
 
 #Calalute P&G brand postive rate on a category level for both product and package and function only
@@ -103,10 +76,6 @@ pg_pivot['Total'] = pg_pivot['Negative'] +  pg_pivot['Positive'] +  pg_pivot['Ne
 pg_pivot['Positive%'] =  pg_pivot['Positive'] / pg_pivot['Total'] 
 pg_pivot['Negative%'] =  pg_pivot['Negative'] / pg_pivot['Total'] 
 pg_pivot_p = pg_pivot.reset_index()
-
-
-# In[336]:
-
 
 # pg positive% category level
 pgc = pd.DataFrame(category2[category2.is_competitor == 0])
@@ -137,10 +106,6 @@ combine_p.columns = ['Category', 'P&G_Pos%', 'P&G_Neg%','Com_Pos%', 'Com_Neg%', 
 combine_p['Benchmark_Pos'] = combine2[['Com_Pos%', 'Indus_Pos%']].max(axis = 1)
 combine_p['Benchmark_Neg'] = combine2[['Com_Neg%', 'Indus_Neg%']].min(axis = 1)
 
-
-# In[337]:
-
-
 final_p = pd.merge(pg_pivot_p, combine_p, left_on = 'category', right_on = 'Category', how = 'outer')
 Result = final_p[['category', 'brand', 'P&G_Pos%', 'Benchmark_Pos','P&G_Neg%',                   'Benchmark_Neg' ]]
 Result['vs_Benchmark_Pos'] = Result['P&G_Pos%'] - Result['Benchmark_Pos']
@@ -157,11 +122,6 @@ Output = Output[['category', 'brand', 'P&G_Pos%_x', 'vs_Benchmark_Pos_x',
                  'P&G_Pos%_y', 'vs_Benchmark_Pos_y', 'P&G_Neg%_y', 'vs_Benchmark_Neg_y'
                 ]]
 Output.columns = ['Category','Brand', 'TTL Pos%', 'vs_Max(Com,Cate)', 'Product_Pos%',                  'vs_Max(Com,Cate)','Product_Neg%', 'vs_Min(Com,Cate)' ]
-Output
 
-
-# In[327]:
-
-
-#Output.to_csv ('/Users/yahuizhang/Desktop/python/AMJ/Output.csv', index = None, header=True) 
+Output.to_csv ('/Users/yahuizhang/Desktop/python/AMJ/Output.csv', index = None, header=True) 
 
