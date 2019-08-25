@@ -18,9 +18,13 @@ for f in FileList:
     all_data = all_data.append(df,ignore_index=True)
 
 #Calalute P&G brand postive rate on a category level for both product and non-product
-category_coment = all_data.groupby(['category','brand', 'is_competitor', 'emotion'],                                    as_index=False)['comments#'].sum()
+category_coment = all_data.groupby(['category','brand', 'is_competitor', 'emotion'],        \
+                                   as_index=False)['comments#'].sum()
 category = pd.DataFrame(category_coment)
-# pg positive% brand level
+
+# pg positive% brand level. Is_competitor is a flag to differentiate the compeitor brand and pg brands. 0 means pg brand only.
+# if is_competitor ==1, it only pulls out competitor brands. 
+
 pg = pd.DataFrame(category[category.is_competitor == 0])
 pg_pivot = pg.pivot_table(values = 'comments#', index = ['category', 'brand'], columns= ['emotion'])
 pg_pivot['Total'] = pg_pivot['Negative'] +  pg_pivot['Positive'] +  pg_pivot['Neutral']  
@@ -28,7 +32,8 @@ pg_pivot['Positive%'] =  pg_pivot['Positive'] / pg_pivot['Total']
 pg_pivot['Negative%'] =  pg_pivot['Negative'] / pg_pivot['Total'] 
 pg_pivot = pg_pivot.reset_index()
 
-# pg positive% category level
+# pg positive% category level. In category level calculation. the columns wouldn't break down to brand, it would directly
+#group by category
 pgc = pd.DataFrame(category[category.is_competitor == 0])
 pgc_pivot = pgc.pivot_table(values = 'comments#', index = ['category'], columns= ['emotion'])
 pgc_pivot['Total'] = pgc_pivot['Negative'] +  pgc_pivot['Positive'] +  pgc_pivot['Neutral']  
